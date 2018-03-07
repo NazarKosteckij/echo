@@ -15,6 +15,7 @@
 import fauxmo
 import logging
 import time
+import requests
 
 from debounce_handler import debounce_handler
 
@@ -23,12 +24,37 @@ logging.basicConfig(level=logging.DEBUG)
 class device_handler(debounce_handler):
     """Publishes the on/off state requested,
        and the IP address of the Echo making the request.
-    """
-    TRIGGERS = {"device": 52000}
+ 
+   """
+    TRIGGERS = {"light": 52001, "corridor light": 52002, "badroom light": 52005, "kitchen light": 52003, "toilet led": 52004}
 
     def act(self, client_address, state, name):
         print "State", state, "on ", name, "from client @", client_address
-        return True
+	if name == "light" :
+		if state :
+		    r = requests.get('http://192.168.1.100/control/bedroom-1/light/on')
+           	    print r.status_code
+		else :
+	    	    r = requests.get('http://192.168.1.100/control/bedroom-1/light/off')
+        	    print r.status_code
+	else : 
+	    if name == 'corridor light' : 
+		if state :
+	 	    r = requests.get('http://192.168.1.100/control/corridor/light/on')
+ 	            print r.status_code
+	        else : 
+		    r = requests.get('http://192.168.1.100/control/corridor/light/off')
+                    print r.status_code
+	    else : 
+	        if name == 'toilet led' :
+                    if state :
+                	r = requests.get('http://192.168.1.100/control/toilet/led/animate')
+                	print r.status_code
+                    else :
+                    	r = requests.get('http://192.168.1.100/control/toilet/led/off')
+                    	print r.status_code
+
+	return True
 
 if __name__ == "__main__":
     # Startup the fauxmo server
