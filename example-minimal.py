@@ -26,7 +26,12 @@ class device_handler(debounce_handler):
        and the IP address of the Echo making the request.
  
    """
-    TRIGGERS = {"light": 52001, "corridor light": 52002, "badroom light": 52005, "kitchen light": 52003, "toilet led": 52004}
+    TRIGGERS = { "light": 52001,
+		 "corridor light": 52002,
+		 "badroom light": 52003,
+		 "kitchen light": 52004, 
+		 "toilet led": 52005,
+		 "security": 52006}
 
     def act(self, client_address, state, name):
         print "State", state, "on ", name, "from client @", client_address
@@ -53,7 +58,22 @@ class device_handler(debounce_handler):
                     else :
                     	r = requests.get('http://192.168.1.100/control/toilet/led/off')
                     	print r.status_code
-
+		else : 
+			if name == 'secutity' :
+                	    if state :
+                	        r = requests.get('http://192.168.1.100/control/security/on')
+                	        print r.status_code
+                	    else :
+        	                r = requests.get('http://192.168.1.100/control/security/off')
+	                        print r.status_code
+		 	else :
+				if name == 'badroom light' :
+					if state :
+						r = requests.get('http://192.168.1.100/control/room/light/on')
+                                		print r.status_code
+                            		else :
+		                                r = requests.get('http://192.168.1.100/control/room/light/off')
+		                                print r.status_code						
 	return True
 
 if __name__ == "__main__":
